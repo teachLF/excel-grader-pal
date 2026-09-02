@@ -34,6 +34,13 @@ export function Dashboard() {
     if (!loading && !user) navigate({ to: "/login" });
   }, [loading, user, navigate]);
 
+  // اختر إعلاناً واحداً عشوائياً فقط لكل جلسة
+  useEffect(() => {
+    if (announcementIdx === null && announcements.length > 0) {
+      setAnnouncementIdx(Math.floor(Math.random() * announcements.length));
+    }
+  }, [announcements, announcementIdx]);
+
   useEffect(() => {
     if (!user) return;
     let active = true;
