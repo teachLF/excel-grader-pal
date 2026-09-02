@@ -21,7 +21,8 @@ export function Dashboard() {
   const { isAdmin } = useIsAdmin();
   const { hasPlus, requested, requestPlus, loading: plusLoading } = usePlus();
   const { announcements } = useAnnouncements();
-  const [announcementIdx, setAnnouncementIdx] = useState(0);
+  const [announcementIdx, setAnnouncementIdx] = useState<number | null>(null);
+  const [adDismissed, setAdDismissed] = useState(false);
   const [classes, setClasses] = useState<ClassRow[]>([]);
   const [newName, setNewName] = useState("");
   const [busy, setBusy] = useState(false);
