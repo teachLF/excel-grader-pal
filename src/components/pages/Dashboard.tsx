@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { LogOut, Plus, Upload, Trash2, Users, Shield, Code2, Trophy, Crown } from "lucide-react";
-import daftariLogo from "@/assets/daftari-logo.jpg.asset.json";
+import daftariLogo from "../assets/daftari-logo.jpg"
 
 type ClassRow = { id: string; name: string; created_at: string };
 
@@ -225,7 +225,7 @@ export function Dashboard() {
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="grid place-items-center h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-background ring-1 ring-primary/30">
-              <img src={daftariLogo.url} alt="شعار دفتري" className="h-full w-full object-contain" />
+          <img src="/daftari-logo.jpg" alt="شعار دفتري" className="h-full w-full object-contain" />
             </div>
             <div>
               <h1 className="text-lg font-bold leading-tight">متابعة الطلاب</h1>
