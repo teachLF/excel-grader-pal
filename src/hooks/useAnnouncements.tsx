@@ -57,9 +57,9 @@ export function useAnnouncements() {
         return null;
       }
 
-      setAnnouncements([data, ...announcements]);
+      setAnnouncements([data as Announcement, ...announcements]);
       toast.success("تم إضافة الإعلان بنجاح");
-      return data;
+      return data as Announcement;
     } catch (err) {
       console.error("[useAnnouncements] Exception adding announcement", err);
       toast.error("حدث خطأ عند إضافة الإعلان");
@@ -82,9 +82,9 @@ export function useAnnouncements() {
         return null;
       }
 
-      setAnnouncements(announcements.map(a => a.id === id ? data : a));
+      setAnnouncements(announcements.map(a => a.id === id ? (data as Announcement) : a));
       toast.success("تم تحديث الإعلان بنجاح");
-      return data;
+      return data as Announcement;
     } catch (err) {
       console.error("[useAnnouncements] Exception updating announcement", err);
       toast.error("حدث خطأ عند تحديث الإعلان");
