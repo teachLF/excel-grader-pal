@@ -152,7 +152,6 @@ export function AdminPanel() {
             <TabsTrigger value="users">المستخدمون</TabsTrigger>
             <TabsTrigger value="announcements">الإعلانات</TabsTrigger>
           </TabsList>
-          </TabsList>
 
           {/* Users Tab */}
           <TabsContent value="users" className="space-y-4">

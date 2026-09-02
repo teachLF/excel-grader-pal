@@ -223,9 +223,6 @@ export function ClassPage({ classId }: { classId: string }) {
       toast.error("حدث خطأ عند تحميل البيانات");
     }
   };
-      setEvents([]);
-    }
-  };
 
   useEffect(() => {
     if (user) load();
