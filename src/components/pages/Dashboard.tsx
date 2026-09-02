@@ -46,6 +46,13 @@ export function Dashboard() {
     let active = true;
     (async () => {
       try {
+        // الطالبة (دخول مايكروسوفت) لا تحتاج اعتماداً — توجَّه لصفحتها الخاصة مباشرة
+        const { data: isStudent } = await supabase.rpc("am_i_student");
+        if (!active) return;
+        if (isStudent) {
+          navigate({ to: "/my-stats", replace: true });
+          return;
+        }
         const { data, error } = await supabase
           .from("profiles")
           .select("approved")
