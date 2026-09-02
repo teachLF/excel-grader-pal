@@ -1,0 +1,12 @@
+REVOKE EXECUTE ON FUNCTION public.has_role(uuid, app_role) FROM PUBLIC, anon;
+REVOKE EXECUTE ON FUNCTION public.current_user_email() FROM PUBLIC, anon;
+REVOKE EXECUTE ON FUNCTION public.is_approved(uuid) FROM PUBLIC, anon;
+REVOKE EXECUTE ON FUNCTION public.am_i_student() FROM PUBLIC, anon;
+REVOKE EXECUTE ON FUNCTION public.ensure_my_profile() FROM PUBLIC, anon;
+REVOKE EXECUTE ON FUNCTION public.my_student_stats() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.has_role(uuid, app_role) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.current_user_email() TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.is_approved(uuid) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.am_i_student() TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.ensure_my_profile() TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.my_student_stats() TO authenticated, service_role;
