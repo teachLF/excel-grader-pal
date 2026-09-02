@@ -9,7 +9,8 @@ import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect } from "react";
-import { Chrome, GraduationCap } from "lucide-react";
+import { Chrome } from "lucide-react";
+import daftariLogo from "@/assets/daftari-logo.jpg.asset.json";
 
 export function LoginPage() {
   const navigate = useNavigate();
