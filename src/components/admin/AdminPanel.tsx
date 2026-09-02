@@ -37,7 +37,7 @@ export function AdminPanel() {
   const [newAnnouncement, setNewAnnouncement] = useState({
     title: "",
     description: "",
-    media_type: "image" as const,
+    media_type: "image" as "image" | "video",
     media_url: "",
     skip_delay_seconds: 5,
     is_active: true,
