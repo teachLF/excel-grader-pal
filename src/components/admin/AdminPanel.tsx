@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useAnnouncements, type Announcement } from "@/hooks/useAnnouncements";
+import { uploadAnnouncementMedia, deleteAnnouncementMedia, resolveMediaUrl } from "@/lib/announcementMedia";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -11,14 +12,41 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { ArrowRight, Check, X, Search, RefreshCw, Plus, Trash2, FileVideo, Image as ImageIcon } from "lucide-react";
+import { ArrowRight, Check, X, Search, RefreshCw, Plus, Trash2, FileVideo, Image as ImageIcon, Upload, Crown } from "lucide-react";
 
 type Profile = {
   id: string;
   email: string | null;
   approved: boolean;
+  is_plus: boolean;
+  plus_requested: boolean;
   created_at: string;
 };
+
+function AnnouncementMedia({ announcement }: { announcement: Announcement }) {
+  const [src, setSrc] = useState("");
+  useEffect(() => {
+    let active = true;
+    void resolveMediaUrl(announcement.media_url).then((u) => active && setSrc(u));
+    return () => {
+      active = false;
+    };
+  }, [announcement.media_url]);
+  if (!src) return <div className="w-full h-[120px] grid place-items-center text-xs text-muted-foreground">...</div>;
+  return announcement.media_type === "video" ? (
+    <video src={src} className="w-full aspect-video object-cover bg-black" controls style={{ maxHeight: "200px" }} />
+  ) : (
+    <img
+      src={src}
+      alt={announcement.title}
+      className="w-full aspect-video object-cover"
+      style={{ maxHeight: "200px" }}
+      onError={(e) => {
+        (e.target as HTMLImageElement).style.display = "none";
+      }}
+    />
+  );
+}
 
 export function AdminPanel() {
   const { user } = useAuth();
@@ -29,7 +57,7 @@ export function AdminPanel() {
   const [query, setQuery] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved" | "plus_requests">("all");
 
   // Announcements
   const { announcements, add: addAnnouncement, update: updateAnnouncement, remove: removeAnnouncement } = useAnnouncements();
@@ -42,6 +70,9 @@ export function AdminPanel() {
     skip_delay_seconds: 5,
     is_active: true,
   });
+  const [mediaFile, setMediaFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const mediaInputRef = useRef<HTMLInputElement>(null);
 
   // access control handled by <AdminGuard>
 
@@ -51,7 +82,7 @@ export function AdminPanel() {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, email, approved, created_at")
+        .select("id, email, approved, is_plus, plus_requested, created_at")
         .order("created_at", { ascending: false });
       if (error) {
         console.error("[AdminPanel] Profiles query failed", error);
@@ -86,28 +117,61 @@ export function AdminPanel() {
     setProfiles((p) => p.map((x) => (x.id === id ? { ...x, approved } : x)));
   };
 
+  const setPlus = async (id: string, is_plus: boolean) => {
+    const { error } = await supabase
+      .from("profiles")
+      .update({ is_plus, plus_requested: false })
+      .eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success(is_plus ? "تم تفعيل Plus" : "تم إلغاء Plus");
+    setProfiles((p) => p.map((x) => (x.id === id ? { ...x, is_plus, plus_requested: false } : x)));
+  };
+
+  const handleMediaFile = (file: File | null) => {
+    setMediaFile(file);
+    if (!file) return;
+    const type = file.type.startsWith("video/") ? "video" : "image";
+    setNewAnnouncement((a) => ({ ...a, media_type: type }));
+  };
+
   const handleAddAnnouncement = async () => {
-    if (!newAnnouncement.title || !newAnnouncement.media_url) {
-      toast.error("يجب ملء العنوان ورابط الوسائط");
+    if (!newAnnouncement.title || !mediaFile) {
+      toast.error("يجب ملء العنوان واختيار ملف الصورة أو الفيديو");
       return;
     }
-    
-    const result = await addAnnouncement({
-      ...newAnnouncement,
-      is_active: true,
-    });
-
-    if (result) {
-      setNewAnnouncement({
-        title: "",
-        description: "",
-        media_type: "image",
-        media_url: "",
-        skip_delay_seconds: 5,
+    setUploading(true);
+    try {
+      const path = await uploadAnnouncementMedia(mediaFile);
+      const result = await addAnnouncement({
+        ...newAnnouncement,
+        media_url: path,
         is_active: true,
       });
-      setShowAddAnnouncement(false);
+      if (result) {
+        setNewAnnouncement({
+          title: "",
+          description: "",
+          media_type: "image",
+          media_url: "",
+          skip_delay_seconds: 5,
+          is_active: true,
+        });
+        setMediaFile(null);
+        if (mediaInputRef.current) mediaInputRef.current.value = "";
+        setShowAddAnnouncement(false);
+      }
+    } catch (err) {
+      console.error("[AdminPanel] Upload failed", err);
+      toast.error(err instanceof Error ? err.message : "فشل رفع الملف");
+    } finally {
+      setUploading(false);
     }
+  };
+
+  const handleRemoveAnnouncement = async (a: Announcement) => {
+    if (!confirm("حذف الإعلان؟")) return;
+    const ok = await removeAnnouncement(a.id);
+    if (ok !== false) await deleteAnnouncementMedia(a.media_url);
   };
 
   const filtered = useMemo(() => {
@@ -117,6 +181,7 @@ export function AdminPanel() {
     return profiles.filter((p) => {
       if (statusFilter === "pending" && p.approved) return false;
       if (statusFilter === "approved" && !p.approved) return false;
+      if (statusFilter === "plus_requests" && !p.plus_requested) return false;
       if (q && !(p.email ?? "").toLowerCase().includes(q)) return false;
       const t = new Date(p.created_at).getTime();
       if (from && t < from) return false;
@@ -177,7 +242,7 @@ export function AdminPanel() {
                 <div>
                   <label className="text-xs text-muted-foreground">الحالة</label>
                   <div className="flex gap-1 mt-1">
-                    {(["pending", "approved", "all"] as const).map((s) => (
+                    {(["pending", "approved", "plus_requests", "all"] as const).map((s) => (
                       <Button
                         key={s}
                         type="button"
@@ -186,7 +251,7 @@ export function AdminPanel() {
                         onClick={() => setStatusFilter(s)}
                         className="flex-1"
                       >
-                        {s === "pending" ? "قيد الانتظار" : s === "approved" ? "موافق عليهم" : "الكل"}
+                        {s === "pending" ? "قيد الانتظار" : s === "approved" ? "موافق عليهم" : s === "plus_requests" ? "طلبات Plus" : "الكل"}
                       </Button>
                     ))}
                   </div>
@@ -236,9 +301,37 @@ export function AdminPanel() {
                         <span className={p.approved ? "text-green-600" : "text-amber-600"}>
                           {p.approved ? "موافق عليه" : "قيد الانتظار"}
                         </span>
+                        {p.is_plus && (
+                          <>
+                            {" · "}
+                            <span className="text-amber-500 font-semibold inline-flex items-center gap-0.5">
+                              <Crown className="h-3 w-3" /> Plus
+                            </span>
+                          </>
+                        )}
+                        {!p.is_plus && p.plus_requested && (
+                          <>
+                            {" · "}
+                            <span className="text-primary font-semibold">يطلب Plus</span>
+                          </>
+                        )}
                       </p>
                     </div>
-                    <div className="flex gap-2 shrink-0">
+                    <div className="flex gap-2 shrink-0 flex-wrap justify-end">
+                      {p.is_plus ? (
+                        <Button size="sm" variant="outline" onClick={() => setPlus(p.id, false)} disabled={p.id === user?.id}>
+                          <Crown className="h-4 w-4 ml-1" /> إلغاء Plus
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant={p.plus_requested ? "default" : "outline"}
+                          onClick={() => setPlus(p.id, true)}
+                          className={p.plus_requested ? "bg-amber-600 hover:bg-amber-700 text-white" : ""}
+                        >
+                          <Crown className="h-4 w-4 ml-1" /> {p.plus_requested ? "قبول Plus" : "منح Plus"}
+                        </Button>
+                      )}
                       {p.approved ? (
                         <Button
                           size="sm"
@@ -344,14 +437,34 @@ export function AdminPanel() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium">رابط الوسائط</label>
-                  <Input
-                    type="url"
-                    placeholder="https://example.com/image.jpg أو video.mp4"
-                    value={newAnnouncement.media_url}
-                    onChange={(e) => setNewAnnouncement({ ...newAnnouncement, media_url: e.target.value })}
-                    className="mt-1"
+                  <label className="text-sm font-medium">ملف الصورة أو الفيديو</label>
+                  <input
+                    ref={mediaInputRef}
+                    type="file"
+                    accept="image/*,video/*"
+                    className="hidden"
+                    onChange={(e) => handleMediaFile(e.target.files?.[0] ?? null)}
                   />
+                  <div className="mt-1 flex items-center gap-2 flex-wrap">
+                    <Button type="button" variant="secondary" onClick={() => mediaInputRef.current?.click()} className="gap-2">
+                      <Upload className="w-4 h-4" /> اختر من الجهاز
+                    </Button>
+                    {mediaFile && (
+                      <span className="text-xs text-muted-foreground truncate max-w-[240px]" dir="ltr">
+                        {mediaFile.name} · {(mediaFile.size / 1024 / 1024).toFixed(1)} MB
+                      </span>
+                    )}
+                  </div>
+                  {mediaFile && (
+                    <div className="mt-2 bg-muted rounded overflow-hidden">
+                      {mediaFile.type.startsWith("video/") ? (
+                        <video src={URL.createObjectURL(mediaFile)} className="w-full max-h-[200px] bg-black" controls />
+                      ) : (
+                        <img src={URL.createObjectURL(mediaFile)} alt="" className="w-full max-h-[200px] object-contain" />
+                      )}
+                    </div>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-1">الحد الأقصى لحجم الملف 100 MB.</p>
                 </div>
 
                 <div className="flex gap-2 justify-end">
@@ -359,6 +472,7 @@ export function AdminPanel() {
                     variant="outline"
                     onClick={() => {
                       setShowAddAnnouncement(false);
+                      setMediaFile(null);
                       setNewAnnouncement({
                         title: "",
                         description: "",
@@ -371,9 +485,9 @@ export function AdminPanel() {
                   >
                     إلغاء
                   </Button>
-                  <Button onClick={handleAddAnnouncement} className="gap-2">
+                  <Button onClick={handleAddAnnouncement} className="gap-2" disabled={uploading}>
                     <Plus className="w-4 h-4" />
-                    إضافة الإعلان
+                    {uploading ? "جاري الرفع..." : "إضافة الإعلان"}
                   </Button>
                 </div>
               </Card>
@@ -413,7 +527,7 @@ export function AdminPanel() {
                       <Button
                         size="sm"
                         variant="destructive"
-                        onClick={() => removeAnnouncement(announcement.id)}
+                        onClick={() => handleRemoveAnnouncement(announcement)}
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -421,24 +535,7 @@ export function AdminPanel() {
 
                     {/* Media Preview */}
                     <div className="bg-muted rounded overflow-hidden">
-                      {announcement.media_type === "video" ? (
-                        <video
-                          src={announcement.media_url}
-                          className="w-full aspect-video object-cover bg-black"
-                          controls
-                          style={{ maxHeight: "200px" }}
-                        />
-                      ) : (
-                        <img
-                          src={announcement.media_url}
-                          alt={announcement.title}
-                          className="w-full aspect-video object-cover"
-                          style={{ maxHeight: "200px" }}
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = "none";
-                          }}
-                        />
-                      )}
+                      <AnnouncementMedia announcement={announcement} />
                     </div>
                   </Card>
                 ))}
