@@ -57,56 +57,56 @@ export function AnnouncementDialog({ announcement, onClose }: AnnouncementDialog
         onClose();
       }
     }}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-foreground">
-            {announcement.title}
-          </DialogTitle>
-          <DialogDescription className="text-base mt-2">
-            {announcement.description}
-          </DialogDescription>
+      <DialogContent
+        showCloseButton={false}
+        className="max-w-none w-screen h-[100dvh] sm:max-w-none rounded-none border-0 p-0 translate-x-0 translate-y-0 top-0 left-0 bg-black text-white gap-0"
+      >
+        <DialogHeader className="sr-only">
+          <DialogTitle>{announcement.title}</DialogTitle>
+          <DialogDescription>{announcement.description}</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
-          {/* Media Section */}
-          <div className="bg-muted rounded-lg overflow-hidden">
-            {!src ? (
-              <div className="w-full aspect-video grid place-items-center text-muted-foreground text-sm">جارٍ التحميل...</div>
-            ) : announcement.media_type === "video" ? (
-              <video
-                src={src}
-                className="w-full aspect-video object-cover bg-black"
-                controls
-                autoPlay
-              />
-            ) : (
-              <img
-                src={src}
-                alt={announcement.title}
-                className="w-full aspect-video object-cover"
-              />
-            )}
-          </div>
+        {/* الوسائط: تملأ الشاشة بالكامل بدون أي قص */}
+        <div className="absolute inset-0 grid place-items-center bg-black">
+          {!src ? (
+            <div className="text-white/70 text-sm">جارٍ التحميل...</div>
+          ) : announcement.media_type === "video" ? (
+            <video
+              src={src}
+              className="max-h-full max-w-full h-full w-full object-contain"
+              controls
+              autoPlay
+            />
+          ) : (
+            <img
+              src={src}
+              alt={announcement.title}
+              className="max-h-full max-w-full h-full w-full object-contain"
+            />
+          )}
+        </div>
 
-          {/* Skip Button */}
-          <div className="flex items-center justify-between">
-            <div></div>
-            {canSkip ? (
-              <Button
-                onClick={onClose}
-                variant="default"
-                className="gap-2"
-              >
-                <X className="w-4 h-4" />
-                تخطي
-              </Button>
-            ) : (
-              <Button disabled variant="secondary" className="gap-2">
-                <Play className="w-4 h-4 animate-pulse" />
-                تخطي بعد {timeLeft}
-              </Button>
-            )}
-          </div>
+        {/* النص */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/80 to-transparent p-4 pb-20 text-center">
+          <h2 className="text-xl font-bold">{announcement.title}</h2>
+          {announcement.description ? (
+            <p className="mt-1 text-sm text-white/80">{announcement.description}</p>
+          ) : null}
+        </div>
+
+        {/* زر التخطي */}
+        <div className="absolute top-4 left-4 z-20">
+          {canSkip ? (
+            <Button onClick={onClose} variant="default" className="gap-2">
+              <X className="w-4 h-4" />
+              تخطي
+            </Button>
+          ) : (
+            <Button disabled variant="secondary" className="gap-2">
+              <Play className="w-4 h-4 animate-pulse" />
+              تخطي بعد {timeLeft}
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>
