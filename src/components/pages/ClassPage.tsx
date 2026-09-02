@@ -139,6 +139,7 @@ function speak(text: string) {
 export function ClassPage({ classId }: { classId: string }) {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { hasPlus, loading: plusLoading } = usePlus();
   const [className, setClassName] = useState("");
   const [students, setStudents] = useState<Student[]>([]);
   const [events, setEvents] = useState<StudentEvent[]>([]);
