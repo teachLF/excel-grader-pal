@@ -5,7 +5,7 @@ import { toast } from "sonner";
 export type Announcement = {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   media_type: "video" | "image";
   media_url: string;
   skip_delay_seconds: number;
@@ -30,7 +30,7 @@ export function useAnnouncements() {
       if (error) {
         console.error("[useAnnouncements] Failed to load announcements", error);
       } else {
-        setAnnouncements(data ?? []);
+        setAnnouncements((data ?? []) as Announcement[]);
       }
     } catch (err) {
       console.error("[useAnnouncements] Exception loading announcements", err);
