@@ -58,8 +58,7 @@ export function AnnouncementDialog({ announcement, onClose }: AnnouncementDialog
       }
     }}>
       <DialogContent
-        showCloseButton={false}
-        className="max-w-none w-screen h-[100dvh] sm:max-w-none rounded-none border-0 p-0 translate-x-0 translate-y-0 top-0 left-0 bg-black text-white gap-0"
+        className="[&>button]:hidden max-w-none w-screen h-[100dvh] sm:max-w-none rounded-none border-0 p-0 translate-x-0 translate-y-0 top-0 left-0 bg-black text-white gap-0"
       >
         <DialogHeader className="sr-only">
           <DialogTitle>{announcement.title}</DialogTitle>
