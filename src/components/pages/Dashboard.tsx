@@ -207,8 +207,8 @@ export function Dashboard() {
       <header className="bg-brand-gradient text-primary-foreground">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="grid place-items-center h-10 w-10 rounded-xl bg-primary/20 backdrop-blur ring-1 ring-primary/30">
-              <GraduationCap className="h-5 w-5" />
+            <div className="grid place-items-center h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-background ring-1 ring-primary/30">
+              <img src={daftariLogo.url} alt="شعار دفتري" className="h-full w-full object-contain" />
             </div>
             <div>
               <h1 className="text-lg font-bold leading-tight">متابعة الطلاب</h1>
