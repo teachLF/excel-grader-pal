@@ -77,18 +77,24 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          is_plus: boolean
+          plus_requested: boolean
         }
         Insert: {
           approved?: boolean
           created_at?: string
           email?: string | null
           id: string
+          is_plus?: boolean
+          plus_requested?: boolean
         }
         Update: {
           approved?: boolean
           created_at?: string
           email?: string | null
           id?: string
+          is_plus?: boolean
+          plus_requested?: boolean
         }
         Relationships: []
       }
@@ -235,6 +241,8 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          is_plus: boolean
+          plus_requested: boolean
         }
         SetofOptions: {
           from: "*"
@@ -244,6 +252,7 @@ export type Database = {
         }
       }
       event_points: { Args: { _event_type: string }; Returns: number }
+      has_plus: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -275,6 +284,7 @@ export type Database = {
           total_points: number
         }[]
       }
+      request_plus: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user"

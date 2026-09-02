@@ -4,11 +4,14 @@ import * as XLSX from "xlsx";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { usePlus, FREE_CLASS_LIMIT, FREE_STUDENT_LIMIT } from "@/hooks/usePlus";
+import { useAnnouncements } from "@/hooks/useAnnouncements";
+import { AnnouncementDialog } from "@/components/dialogs/AnnouncementDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { LogOut, Plus, Upload, Trash2, Users, Shield, Code2, GraduationCap, Trophy } from "lucide-react";
+import { LogOut, Plus, Upload, Trash2, Users, Shield, Code2, GraduationCap, Trophy, Crown } from "lucide-react";
 
 type ClassRow = { id: string; name: string; created_at: string };
 
@@ -16,6 +19,9 @@ export function Dashboard() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const { hasPlus, requested, requestPlus, loading: plusLoading } = usePlus();
+  const { announcements } = useAnnouncements();
+  const [announcementIdx, setAnnouncementIdx] = useState(0);
   const [classes, setClasses] = useState<ClassRow[]>([]);
   const [newName, setNewName] = useState("");
   const [busy, setBusy] = useState(false);
@@ -66,8 +72,20 @@ export function Dashboard() {
     if (user) load();
   }, [user]);
 
+  const atClassLimit = !hasPlus && !plusLoading && classes.length >= FREE_CLASS_LIMIT;
+
+  const handleRequestPlus = async () => {
+    try {
+      await requestPlus();
+      toast.success("تم إرسال طلب Plus للمسؤول");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "فشل إرسال الطلب");
+    }
+  };
+
   const createClass = async () => {
     if (!newName.trim() || !user) return;
+    if (atClassLimit) return toast.error(`الحد الأقصى ${FREE_CLASS_LIMIT} فصول. اطلب Plus لفصول غير محدودة.`);
     const { error } = await supabase
       .from("classes")
       .insert({ name: newName.trim(), user_id: user.id });
@@ -87,6 +105,11 @@ export function Dashboard() {
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
+    if (atClassLimit) {
+      toast.error(`الحد الأقصى ${FREE_CLASS_LIMIT} فصول. اطلب Plus لفصول غير محدودة.`);
+      e.target.value = "";
+      return;
+    }
     setBusy(true);
     try {
       const buf = await file.arrayBuffer();
@@ -104,10 +127,14 @@ export function Dashboard() {
         }
       }
       // skip a header row if it doesn't look like a name
-      const filtered = names.filter(
+      let filtered = names.filter(
         (n, i) =>
           !(i === 0 && /name|اسم|الطالب|student/i.test(n))
       );
+      if (!hasPlus && filtered.length > FREE_STUDENT_LIMIT) {
+        toast.warning(`تم استيراد أول ${FREE_STUDENT_LIMIT} طالبًا فقط (حد الحساب المجاني).`);
+        filtered = filtered.slice(0, FREE_STUDENT_LIMIT);
+      }
       if (filtered.length === 0) {
         toast.error("لم يتم العثور على أسماء في الملف");
         return;
@@ -168,8 +195,15 @@ export function Dashboard() {
     );
   }
 
+  const showAds = !plusLoading && !hasPlus;
+  const currentAnnouncement = showAds ? announcements[announcementIdx] ?? null : null;
+
   return (
     <div className="min-h-screen bg-muted/30">
+      <AnnouncementDialog
+        announcement={currentAnnouncement}
+        onClose={() => setAnnouncementIdx((i) => i + 1)}
+      />
       <header className="bg-brand-gradient text-primary-foreground">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -226,9 +260,41 @@ export function Dashboard() {
           </Card>
           <Card className="p-4 col-span-2 sm:col-span-1">
             <p className="text-xs text-muted-foreground">الحالة</p>
-            <p className="text-sm font-medium mt-1 text-foreground">{isAdmin ? "حساب مسؤول" : "حساب معتمد"}</p>
+            <p className="text-sm font-medium mt-1 text-foreground flex items-center gap-1">
+              {isAdmin ? "حساب مسؤول" : hasPlus ? (
+                <>
+                  <Crown className="h-4 w-4 text-amber-500" /> حساب Plus
+                </>
+              ) : (
+                "حساب معتمد"
+              )}
+            </p>
           </Card>
         </div>
+
+        {!plusLoading && !hasPlus && (
+          <Card className="p-4 border-amber-500/40 bg-amber-500/5 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+            <div className="flex items-start gap-3">
+              <div className="grid place-items-center h-10 w-10 rounded-xl bg-amber-500/20 text-amber-600 shrink-0">
+                <Crown className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="font-semibold">ترقية إلى Plus</p>
+                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                  حسابك الحالي: {FREE_CLASS_LIMIT} فصول كحد أقصى و{FREE_STUDENT_LIMIT} طالبًا لكل فصل ({classes.length}/{FREE_CLASS_LIMIT} مستخدم).
+                  مع Plus: فصول غير محدودة وبدون إعلانات. التفعيل يتم بموافقة المسؤول.
+                </p>
+              </div>
+            </div>
+            {requested ? (
+              <span className="text-xs font-medium text-amber-600 shrink-0">تم إرسال طلبك، بانتظار موافقة المسؤول</span>
+            ) : (
+              <Button size="sm" onClick={handleRequestPlus} className="bg-amber-600 hover:bg-amber-700 text-white shrink-0">
+                <Crown className="h-4 w-4 ml-1" /> طلب Plus
+              </Button>
+            )}
+          </Card>
+        )}
 
         <Card className="p-5 shadow-elegant">
           <h2 className="font-semibold mb-3">إنشاء فصل جديد</h2>
@@ -239,13 +305,13 @@ export function Dashboard() {
               onChange={(e) => setNewName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && createClass()}
             />
-            <Button onClick={createClass} disabled={!newName.trim()} className="bg-accent-gradient hover:opacity-90">
+            <Button onClick={createClass} disabled={!newName.trim() || atClassLimit} className="bg-accent-gradient hover:opacity-90">
               <Plus className="h-4 w-4 ml-1" /> إضافة
             </Button>
             <Button
               variant="secondary"
               onClick={() => fileRef.current?.click()}
-              disabled={busy}
+              disabled={busy || atClassLimit}
             >
               <Upload className="h-4 w-4 ml-1" />
               {busy ? "جاري..." : "استيراد من Excel"}
@@ -261,6 +327,9 @@ export function Dashboard() {
           <p className="text-xs text-muted-foreground mt-2">
             ملف Excel: أسماء الطلاب في العمود الأول (يُتجاهل صف العنوان إن وجد).
           </p>
+          {atClassLimit && (
+            <p className="text-xs text-amber-600 mt-1">وصلت للحد الأقصى ({FREE_CLASS_LIMIT} فصول). اطلب Plus لإضافة المزيد.</p>
+          )}
         </Card>
 
         <div>

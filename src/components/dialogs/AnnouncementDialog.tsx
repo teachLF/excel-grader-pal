@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Announcement } from "@/hooks/useAnnouncements";
+import { resolveMediaUrl } from "@/lib/announcementMedia";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { X, Play } from "lucide-react";
@@ -12,6 +13,18 @@ interface AnnouncementDialogProps {
 export function AnnouncementDialog({ announcement, onClose }: AnnouncementDialogProps) {
   const [canSkip, setCanSkip] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
+  const [src, setSrc] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    setSrc("");
+    if (announcement) {
+      void resolveMediaUrl(announcement.media_url).then((u) => active && setSrc(u));
+    }
+    return () => {
+      active = false;
+    };
+  }, [announcement]);
 
   useEffect(() => {
     if (!announcement) {
@@ -57,16 +70,18 @@ export function AnnouncementDialog({ announcement, onClose }: AnnouncementDialog
         <div className="space-y-4">
           {/* Media Section */}
           <div className="bg-muted rounded-lg overflow-hidden">
-            {announcement.media_type === "video" ? (
+            {!src ? (
+              <div className="w-full aspect-video grid place-items-center text-muted-foreground text-sm">جارٍ التحميل...</div>
+            ) : announcement.media_type === "video" ? (
               <video
-                src={announcement.media_url}
+                src={src}
                 className="w-full aspect-video object-cover bg-black"
                 controls
                 autoPlay
               />
             ) : (
               <img
-                src={announcement.media_url}
+                src={src}
                 alt={announcement.title}
                 className="w-full aspect-video object-cover"
               />
