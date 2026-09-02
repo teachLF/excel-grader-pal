@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Announcement } from "@/hooks/useAnnouncements";
+import { resolveMediaUrl } from "@/lib/announcementMedia";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { X, Play } from "lucide-react";
@@ -12,6 +13,18 @@ interface AnnouncementDialogProps {
 export function AnnouncementDialog({ announcement, onClose }: AnnouncementDialogProps) {
   const [canSkip, setCanSkip] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
+  const [src, setSrc] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    setSrc("");
+    if (announcement) {
+      void resolveMediaUrl(announcement.media_url).then((u) => active && setSrc(u));
+    }
+    return () => {
+      active = false;
+    };
+  }, [announcement]);
 
   useEffect(() => {
     if (!announcement) {
