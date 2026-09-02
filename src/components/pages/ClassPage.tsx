@@ -3,6 +3,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import * as XLSX from "xlsx";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { usePlus, FREE_STUDENT_LIMIT } from "@/hooks/usePlus";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -291,6 +292,9 @@ export function ClassPage({ classId }: { classId: string }) {
 
   const addStudent = async () => {
     if (!newName.trim() || !user) return;
+    if (!hasPlus && !plusLoading && students.length >= FREE_STUDENT_LIMIT) {
+      return toast.error(`الحد الأقصى ${FREE_STUDENT_LIMIT} طالبًا في الفصل. اطلب Plus من الصفحة الرئيسية.`);
+    }
     const max = students.reduce((m, s) => Math.max(m, s.order_index), -1);
     const { error } = await supabase.from("students").insert({
       class_id: classId,
