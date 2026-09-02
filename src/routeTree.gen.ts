@@ -10,33 +10,128 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as MyStatsRouteImport } from './routes/my-stats'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SourceRouteImport } from './routes/source'
+import { Route as ClassIdRouteImport } from './routes/class.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyStatsRoute = MyStatsRouteImport.update({
+  id: '/my-stats',
+  path: '/my-stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SourceRoute = SourceRouteImport.update({
+  id: '/source',
+  path: '/source',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClassIdRoute = ClassIdRouteImport.update({
+  id: '/class/$id',
+  path: '/class/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/leaderboard': typeof LeaderboardRoute
+  '/login': typeof LoginRoute
+  '/my-stats': typeof MyStatsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/source': typeof SourceRoute
+  '/class/$id': typeof ClassIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/leaderboard': typeof LeaderboardRoute
+  '/login': typeof LoginRoute
+  '/my-stats': typeof MyStatsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/source': typeof SourceRoute
+  '/class/$id': typeof ClassIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/leaderboard': typeof LeaderboardRoute
+  '/login': typeof LoginRoute
+  '/my-stats': typeof MyStatsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/source': typeof SourceRoute
+  '/class/$id': typeof ClassIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/leaderboard'
+    | '/login'
+    | '/my-stats'
+    | '/sitemap.xml'
+    | '/source'
+    | '/class/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin'
+    | '/leaderboard'
+    | '/login'
+    | '/my-stats'
+    | '/sitemap.xml'
+    | '/source'
+    | '/class/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/leaderboard'
+    | '/login'
+    | '/my-stats'
+    | '/sitemap.xml'
+    | '/source'
+    | '/class/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  LeaderboardRoute: typeof LeaderboardRoute
+  LoginRoute: typeof LoginRoute
+  MyStatsRoute: typeof MyStatsRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SourceRoute: typeof SourceRoute
+  ClassIdRoute: typeof ClassIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +143,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-stats': {
+      id: '/my-stats'
+      path: '/my-stats'
+      fullPath: '/my-stats'
+      preLoaderRoute: typeof MyStatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/source': {
+      id: '/source'
+      path: '/source'
+      fullPath: '/source'
+      preLoaderRoute: typeof SourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/class/$id': {
+      id: '/class/$id'
+      path: '/class/$id'
+      fullPath: '/class/$id'
+      preLoaderRoute: typeof ClassIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  LeaderboardRoute: LeaderboardRoute,
+  LoginRoute: LoginRoute,
+  MyStatsRoute: MyStatsRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SourceRoute: SourceRoute,
+  ClassIdRoute: ClassIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
