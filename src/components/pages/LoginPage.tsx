@@ -9,7 +9,8 @@ import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect } from "react";
-import { Chrome, GraduationCap } from "lucide-react";
+import { Chrome } from "lucide-react";
+import daftariLogo from "@/assets/daftari-logo.jpg.asset.json";
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -165,8 +166,8 @@ export function LoginPage() {
 
       <Card className="relative w-full max-w-md p-8 backdrop-blur-xl bg-card/90 border-primary/20 shadow-glow">
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="mb-3 grid place-items-center h-14 w-14 rounded-2xl bg-accent-gradient text-primary-foreground shadow-elegant">
-            <GraduationCap className="h-7 w-7" />
+          <div className="mb-3 grid place-items-center h-16 w-16 overflow-hidden rounded-2xl bg-background shadow-elegant">
+            <img src={daftariLogo.url} alt="شعار دفتري" className="h-full w-full object-contain" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">
             متابعة <span className="text-gradient">الطلاب</span>

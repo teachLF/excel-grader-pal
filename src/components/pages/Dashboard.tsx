@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { LogOut, Plus, Upload, Trash2, Users, Shield, Code2, GraduationCap, Trophy, Crown } from "lucide-react";
+import { LogOut, Plus, Upload, Trash2, Users, Shield, Code2, Trophy, Crown } from "lucide-react";
+import daftariLogo from "@/assets/daftari-logo.jpg.asset.json";
 
 type ClassRow = { id: string; name: string; created_at: string };
 
@@ -21,7 +22,8 @@ export function Dashboard() {
   const { isAdmin } = useIsAdmin();
   const { hasPlus, requested, requestPlus, loading: plusLoading } = usePlus();
   const { announcements } = useAnnouncements();
-  const [announcementIdx, setAnnouncementIdx] = useState(0);
+  const [announcementIdx, setAnnouncementIdx] = useState<number | null>(null);
+  const [adDismissed, setAdDismissed] = useState(false);
   const [classes, setClasses] = useState<ClassRow[]>([]);
   const [newName, setNewName] = useState("");
   const [busy, setBusy] = useState(false);
@@ -31,6 +33,13 @@ export function Dashboard() {
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
   }, [loading, user, navigate]);
+
+  // اختر إعلاناً واحداً عشوائياً فقط لكل جلسة
+  useEffect(() => {
+    if (announcementIdx === null && announcements.length > 0) {
+      setAnnouncementIdx(Math.floor(Math.random() * announcements.length));
+    }
+  }, [announcements, announcementIdx]);
 
   useEffect(() => {
     if (!user) return;
@@ -195,20 +204,21 @@ export function Dashboard() {
     );
   }
 
-  const showAds = !plusLoading && !hasPlus;
-  const currentAnnouncement = showAds ? announcements[announcementIdx] ?? null : null;
+  const showAds = !plusLoading && !hasPlus && !adDismissed;
+  const currentAnnouncement =
+    showAds && announcementIdx !== null ? announcements[announcementIdx] ?? null : null;
 
   return (
     <div className="min-h-screen bg-muted/30">
       <AnnouncementDialog
         announcement={currentAnnouncement}
-        onClose={() => setAnnouncementIdx((i) => i + 1)}
+        onClose={() => setAdDismissed(true)}
       />
       <header className="bg-brand-gradient text-primary-foreground">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="grid place-items-center h-10 w-10 rounded-xl bg-primary/20 backdrop-blur ring-1 ring-primary/30">
-              <GraduationCap className="h-5 w-5" />
+            <div className="grid place-items-center h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-background ring-1 ring-primary/30">
+              <img src={daftariLogo.url} alt="شعار دفتري" className="h-full w-full object-contain" />
             </div>
             <div>
               <h1 className="text-lg font-bold leading-tight">متابعة الطلاب</h1>
