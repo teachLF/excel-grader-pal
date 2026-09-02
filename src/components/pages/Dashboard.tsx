@@ -195,14 +195,15 @@ export function Dashboard() {
     );
   }
 
-  const showAds = !plusLoading && !hasPlus;
-  const currentAnnouncement = showAds ? announcements[announcementIdx] ?? null : null;
+  const showAds = !plusLoading && !hasPlus && !adDismissed;
+  const currentAnnouncement =
+    showAds && announcementIdx !== null ? announcements[announcementIdx] ?? null : null;
 
   return (
     <div className="min-h-screen bg-muted/30">
       <AnnouncementDialog
         announcement={currentAnnouncement}
-        onClose={() => setAnnouncementIdx((i) => i + 1)}
+        onClose={() => setAdDismissed(true)}
       />
       <header className="bg-brand-gradient text-primary-foreground">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
