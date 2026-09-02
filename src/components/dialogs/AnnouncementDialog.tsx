@@ -70,16 +70,18 @@ export function AnnouncementDialog({ announcement, onClose }: AnnouncementDialog
         <div className="space-y-4">
           {/* Media Section */}
           <div className="bg-muted rounded-lg overflow-hidden">
-            {announcement.media_type === "video" ? (
+            {!src ? (
+              <div className="w-full aspect-video grid place-items-center text-muted-foreground text-sm">جارٍ التحميل...</div>
+            ) : announcement.media_type === "video" ? (
               <video
-                src={announcement.media_url}
+                src={src}
                 className="w-full aspect-video object-cover bg-black"
                 controls
                 autoPlay
               />
             ) : (
               <img
-                src={announcement.media_url}
+                src={src}
                 alt={announcement.title}
                 className="w-full aspect-video object-cover"
               />
