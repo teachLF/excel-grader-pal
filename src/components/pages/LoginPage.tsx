@@ -167,7 +167,7 @@ export function LoginPage() {
       <Card className="relative w-full max-w-md p-8 backdrop-blur-xl bg-card/90 border-primary/20 shadow-glow">
         <div className="flex flex-col items-center text-center mb-6">
           <div className="mb-3 grid place-items-center h-16 w-16 overflow-hidden rounded-2xl bg-background shadow-elegant">
-            <img src={daftariLogo.url} alt="شعار دفتري" className="h-full w-full object-contain" />
+            <img src="/daftari-logo.jpg" alt="شعار دفتري" className="h-full w-full object-contain" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">
             متابعة <span className="text-gradient">الطلاب</span>
