@@ -9,7 +9,21 @@ import {
 } from "@tanstack/react-router";
 
 import "../styles.css";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Toaster } from "@/components/ui/sonner";
+
+const themeInitializationScript = `
+(function () {
+  try {
+    var theme = localStorage.getItem("teachlf-theme") === "dark" ? "dark" : "light";
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    document.documentElement.style.colorScheme = theme;
+  } catch (_) {
+    document.documentElement.classList.remove("dark");
+    document.documentElement.style.colorScheme = "light";
+  }
+})();
+`;
 
 function NotFoundComponent() {
   return (
@@ -104,9 +118,45 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl">
+    <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <script dangerouslySetInnerHTML={{ __html: themeInitializationScript }} />
+        <style>{`
+          html:not(.dark) {
+            --background: oklch(1 0 0);
+            --sidebar: oklch(1 0 0);
+          }
+
+          header.bg-brand-gradient {
+            background-color: var(--card) !important;
+            background-image: none !important;
+            color: var(--foreground) !important;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 1px 3px color-mix(in oklab, var(--foreground) 7%, transparent);
+          }
+
+          header.bg-brand-gradient a,
+          header.bg-brand-gradient button,
+          header.bg-brand-gradient p {
+            color: var(--foreground) !important;
+          }
+
+          header.bg-brand-gradient p {
+            opacity: 0.65;
+          }
+
+          header.bg-brand-gradient a,
+          header.bg-brand-gradient button {
+            background-color: var(--secondary) !important;
+            border-color: var(--border) !important;
+          }
+
+          header.bg-brand-gradient a:hover,
+          header.bg-brand-gradient button:hover {
+            background-color: var(--accent) !important;
+          }
+        `}</style>
       </head>
       <body>
         {children}
@@ -122,6 +172,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <ThemeToggle />
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );
