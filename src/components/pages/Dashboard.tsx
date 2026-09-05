@@ -306,7 +306,7 @@ export function Dashboard() {
             {requested ? (
               <span className="text-xs font-medium text-amber-600 shrink-0">تم إرسال طلبك، بانتظار موافقة المسؤول</span>
             ) : (
-              <Button size="sm" onClick={handleRequestPlus} className="bg-amber-600 hover:bg-amber-700 text-white shrink-0">
+              <Button size="sm" onClick={handleRequestPlus} className="bg-amber-600 hover:bg-amber-700 text-red shrink-0">
                 <Crown className="h-4 w-4 ml-1" /> طلب Plus
               </Button>
             )}
