@@ -4,7 +4,7 @@ import { Dashboard } from "@/components/pages/Dashboard";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ادارة المعلمين — إدارة الفصول" },
+      { title: "ادارة الفصول — إدارة الفصول" },
       { name: "description", content: "نظام عربي لإدارة الفصول ومتابعة حضور الطلاب وسلوكهم." },
       { property: "og:title", content: "متابعة الطلاب — إدارة الفصول" },
       { property: "og:description", content: "نظام عربي لإدارة الفصول ومتابعة حضور الطلاب وسلوكهم." },
