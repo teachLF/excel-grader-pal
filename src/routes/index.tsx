@@ -18,3 +18,6 @@ export const Route = createFileRoute("/")({
 function Index() {
   return <Dashboard />;
 }
+
+// Added by local code assistant
+console.log("Requested checkpoint");
