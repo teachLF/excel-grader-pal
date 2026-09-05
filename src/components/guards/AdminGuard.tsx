@@ -110,3 +110,6 @@ function Blocked({
     </div>
   );
 }
+
+// Added by local code assistant
+console.log("Requested checkpoint");
