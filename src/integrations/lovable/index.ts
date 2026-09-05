@@ -36,3 +36,6 @@ export const lovable = {
     },
   },
 };
+
+// Added by local code assistant
+console.log("Requested checkpoint");
