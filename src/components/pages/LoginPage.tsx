@@ -169,7 +169,7 @@ export function LoginPage() {
           <div className="mb-3 grid place-items-center h-16 w-16 overflow-hidden rounded-2xl bg-background shadow-elegant">
             <img src="/daftari-logo.jpg" alt="شعار دفتري" className="h-full w-full object-contain" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
             دفتري
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
