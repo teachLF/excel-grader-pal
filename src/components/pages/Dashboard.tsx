@@ -228,7 +228,7 @@ export function Dashboard() {
           <img src="/daftari-logo.jpg" alt="شعار دفتري" className="h-full w-full object-contain" />
             </div>
             <div>
-              <h1 className="text-lg font-bold leading-tight">متابعة الطلاب</h1>
+              <h1 className="text-lg font-bold leading-tight">ادارة المعلمين</h1>
               <p className="text-xs text-primary-foreground/70" dir="ltr">{user.email}</p>
             </div>
           </div>
