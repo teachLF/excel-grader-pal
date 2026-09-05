@@ -170,7 +170,7 @@ export function LoginPage() {
             <img src="/daftari-logo.jpg" alt="شعار دفتري" className="h-full w-full object-contain" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">
-            متابعة <span className="text-gradient">الطلاب</span>
+            ادارة <span className="text-gradient">المعلمين</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
             {mode === "signin" ? "سجّل دخولك للمتابعة" : "أنشئ حساباً جديداً"}
