@@ -1,4 +1,4 @@
-# دفتري الجميل
+# دفتري الجميلة
 
 استورد لي هذا الرابط https://github.com/teachLF/excel-grade-buddy
 
