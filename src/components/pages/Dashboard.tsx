@@ -287,20 +287,26 @@ export function Dashboard() {
               )}
             </p>
           </Card>
-        </div>
+              </div>
 
-        {!plusLoading && !hasPlus && (
-          <Card className="p-4 border-amber-500/40 bg-amber-500/5 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
-            <div className="flex items-start gap-3">
-              <div className="grid place-items-center h-10 w-10 rounded-xl bg-amber-500/20 text-amber-600 shrink-0">
-                <Crown className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="font-semibold">ترقية إلى Plus</p>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  حسابك الحالي: {FREE_CLASS_LIMIT} فصول كحد أقصى و{FREE_STUDENT_LIMIT} طالبًا لكل فصل ({classes.length}/{FREE_CLASS_LIMIT} مستخدم).
-                  مع Plus: فصول غير محدودة وبدون إعلانات. التفعيل يتم بموافقة المسؤول.
-                </p>
-              </div>
+      {!plusLoading && !hasPlus && (
+        <Card className="p-4 border-amber-500/40 bg-amber-500/5 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+          <div className="flex items-start gap-3">
+            <div className="grid place-items-center h-10 w-10 rounded-xl bg-amber-500/20 text-amber-600 shrink-0">
+              <Crown className="h-5 w-5" />
             </div>
-            
+            <div>
+              <p className="font-semibold">ترقية إلى Plus</p>
+              <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                حسابك الحالي: {FREE_CLASS_LIMIT} فصول كحد أقصى و {FREE_STUDENT_LIMIT} طالبًا لكل فصل ({classes.length}/{FREE_CLASS_LIMIT} مستخدم). مع Plus: فصول غير محدودة وبدون إعلانات. التفعيل يتم بموافقة المسؤول.
+              </p>
+            </div>
+          </div>
+        </Card>
+      )}
+    </main>
+  </div>
+);
+};
+
+export default Dashboard;
