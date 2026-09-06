@@ -228,7 +228,7 @@ export function Dashboard() {
           <img src="/daftari-logo.jpg" alt="شعار دفتري" className="h-full w-full object-contain" />
             </div>
             <div>
-              <h1 className="text-lg font-bold leading-tight">ادارة المعلمين</h1>
+              <h1 className="text-lg font-bold leading-tight">دفتري الجميل</h1>
               <p className="text-xs text-primary-foreground/70" dir="ltr">{user.email}</p>
             </div>
           </div>
@@ -303,99 +303,4 @@ export function Dashboard() {
                 </p>
               </div>
             </div>
-            {requested ? (
-              <span className="text-xs font-medium text-amber-600 shrink-0">تم إرسال طلبك، بانتظار موافقة المسؤول</span>
-            ) : (
-              <Button size="sm" onClick={handleRequestPlus} className="bg-amber-600 hover:bg-amber-700 text-red shrink-0">
-                <Crown className="h-4 w-4 ml-1" /> طلب Plus
-              </Button>
-            )}
-          </Card>
-        )}
-
-        <Card className="p-5 shadow-elegant">
-          <h2 className="font-semibold mb-3">إنشاء فصل جديد</h2>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Input
-              placeholder="اسم الفصل"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && createClass()}
-            />
-            <Button onClick={createClass} disabled={!newName.trim() || atClassLimit} className="bg-accent-gradient hover:opacity-90">
-              <Plus className="h-4 w-4 ml-1" /> إضافة
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => fileRef.current?.click()}
-              disabled={busy || atClassLimit}
-            >
-              <Upload className="h-4 w-4 ml-1" />
-              {busy ? "جاري..." : "استيراد من Excel"}
-            </Button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept=".xlsx,.xls,.csv"
-              className="hidden"
-              onChange={handleFile}
-            />
-          </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            ملف Excel: أسماء الطلاب في العمود الأول (يُتجاهل صف العنوان إن وجد).
-          </p>
-          {atClassLimit && (
-            <p className="text-xs text-amber-600 mt-1">وصلت للحد الأقصى ({FREE_CLASS_LIMIT} فصول). اطلب Plus لإضافة المزيد.</p>
-          )}
-        </Card>
-
-        <div>
-          <h2 className="font-semibold mb-3">فصولي</h2>
-          {classes.length === 0 ? (
-            <Card className="p-8 text-center text-muted-foreground">
-              لا توجد فصول بعد. أنشئ فصلاً أو استورد ملف Excel للبدء.
-            </Card>
-          ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {classes.map((c) => (
-                <Card key={c.id} className="group p-4 flex items-center justify-between hover:shadow-elegant hover:-translate-y-0.5 transition-all overflow-hidden relative">
-                  <div className="absolute inset-y-0 right-0 w-1 bg-accent-gradient opacity-70" />
-                  <Link
-                    to="/class/$id"
-                    params={{ id: c.id }}
-                    className="flex-1 flex items-center gap-3 font-medium"
-                  >
-                    <span className="grid place-items-center h-9 w-9 rounded-lg bg-accent/60 text-accent-foreground">
-                      <Users className="h-4 w-4" />
-                    </span>
-                    {c.name}
-                  </Link>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => deleteClass(c.id)}
-                    className="opacity-60 group-hover:opacity-100"
-                  >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
-      </main>
-    </div>
-  );
-}
-
-// Added by local code assistant
-console.log("Requested checkpoint");
-
-// Added by local code assistant
-console.log("Requested checkpoint");
-
-// Added by local code assistant
-console.log("Requested checkpoint");
-
-// Added by local code assistant
-console.log("Requested checkpoint");
+            {requ
