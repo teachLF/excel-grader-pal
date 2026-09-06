@@ -303,4 +303,7 @@ export function Dashboard() {
                 </p>
               </div>
             </div>
-            
+              );
+};
+
+export default Dashboard;
