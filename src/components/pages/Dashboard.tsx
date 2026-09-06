@@ -301,9 +301,12 @@ export function Dashboard() {
                   حسابك الحالي: {FREE_CLASS_LIMIT} فصول كحد أقصى و{FREE_STUDENT_LIMIT} طالبًا لكل فصل ({classes.length}/{FREE_CLASS_LIMIT} مستخدم).
                   مع Plus: فصول غير محدودة وبدون إعلانات. التفعيل يتم بموافقة المسؤول.
                 </p>
-              </div>
-            </div>
-              );
+                    </div>
+        </div>
+      </Card>
+      )}
+    </div>
+  );
 };
 
 export default Dashboard;
