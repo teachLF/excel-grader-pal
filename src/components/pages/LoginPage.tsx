@@ -10,7 +10,6 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect } from "react";
 import { Chrome } from "lucide-react";
-import daftariLogo from "@/assets/daftari-logo.jpg.asset.json";
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -170,7 +169,7 @@ export function LoginPage() {
             <img src="/daftari-logo.jpg" alt="شعار دفتري" className="h-full w-full object-contain" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            دفتري الجميلة
+            دفتري الرائع
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
             {mode === "signin" ? "سجّل دخولك للمتابعة" : "أنشئ حساباً جديداً"}
@@ -274,12 +273,3 @@ export function LoginPage() {
     </div>
   );
 }
-
-// Added by local code assistant
-console.log("Requested checkpoint");
-
-// Added by local code assistant
-console.log("Requested checkpoint");
-
-// Added by local code assistant
-console.log("Requested checkpoint");

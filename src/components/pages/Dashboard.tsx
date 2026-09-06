@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { LogOut, Plus, Upload, Trash2, Users, Shield, Code2, Trophy, Crown } from "lucide-react";
-import daftariLogo from "../assets/daftari-logo.jpg"
 
 type ClassRow = { id: string; name: string; created_at: string };
 
@@ -34,7 +33,6 @@ export function Dashboard() {
     if (!loading && !user) navigate({ to: "/login" });
   }, [loading, user, navigate]);
 
-  // اختر إعلاناً واحداً عشوائياً فقط لكل جلسة
   useEffect(() => {
     if (announcementIdx === null && announcements.length > 0) {
       setAnnouncementIdx(Math.floor(Math.random() * announcements.length));
@@ -46,7 +44,6 @@ export function Dashboard() {
     let active = true;
     (async () => {
       try {
-        // الطالبة (دخول مايكروسوفت) لا تحتاج اعتماداً — توجَّه لصفحتها الخاصة مباشرة
         const { data: isStudent } = await supabase.rpc("am_i_student");
         if (!active) return;
         if (isStudent) {
@@ -142,7 +139,6 @@ export function Dashboard() {
           }
         }
       }
-      // skip a header row if it doesn't look like a name
       let filtered = names.filter(
         (n, i) =>
           !(i === 0 && /name|اسم|الطالب|student/i.test(n))
@@ -225,10 +221,10 @@ export function Dashboard() {
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="grid place-items-center h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-background ring-1 ring-primary/30">
-          <img src="/daftari-logo.jpg" alt="شعار دفتري" className="h-full w-full object-contain" />
+              <img src="/daftari-logo.jpg" alt="شعار دفتري" className="h-full w-full object-contain" />
             </div>
             <div>
-              <h1 className="text-lg font-bold leading-tight">دفتري الجميلة</h1>
+              <h1 className="text-lg font-bold leading-tight">دفتري الرائع</h1>
               <p className="text-xs text-primary-foreground/70" dir="ltr">{user.email}</p>
             </div>
           </div>
@@ -287,26 +283,81 @@ export function Dashboard() {
               )}
             </p>
           </Card>
+        </div>
+
+        {!plusLoading && !hasPlus && (
+          <Card className="p-4 border-amber-500/40 bg-amber-500/5 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+            <div className="flex items-start gap-3">
+              <div className="grid place-items-center h-10 w-10 rounded-xl bg-amber-500/20 text-amber-600 shrink-0">
+                <Crown className="h-5 w-5" />
               </div>
+              <div>
+                <p className="font-semibold">ترقية إلى Plus</p>
+                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                  حسابك الحالي: {FREE_CLASS_LIMIT} فصول كحد أقصى و {FREE_STUDENT_LIMIT} طالبًا لكل فصل ({classes.length}/{FREE_CLASS_LIMIT} مستخدم). مع Plus: فصول غير محدودة وبدون إعلانات. التفعيل يتم بموافقة المسؤول.
+                </p>
+              </div>
+            </div>
+            <Button onClick={handleRequestPlus} disabled={requested} className="bg-amber-500 hover:bg-amber-600 text-white">
+              <Crown className="h-4 w-4 ml-1" /> {requested ? "تم إرسال الطلب" : "طلب ترقية Plus"}
+            </Button>
+          </Card>
+        )}
 
-      {!plusLoading && !hasPlus && (
-        <Card className="p-4 border-amber-500/40 bg-amber-500/5 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
-          <div className="flex items-start gap-3">
-            <div className="grid place-items-center h-10 w-10 rounded-xl bg-amber-500/20 text-amber-600 shrink-0">
-              <Crown className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="font-semibold">ترقية إلى Plus</p>
-              <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                حسابك الحالي: {FREE_CLASS_LIMIT} فصول كحد أقصى و {FREE_STUDENT_LIMIT} طالبًا لكل فصل ({classes.length}/{FREE_CLASS_LIMIT} مستخدم). مع Plus: فصول غير محدودة وبدون إعلانات. التفعيل يتم بموافقة المسؤول.
-              </p>
-            </div>
+        <Card className="p-4 space-y-3">
+          <h2 className="font-semibold flex items-center gap-2">
+            <Plus className="h-5 w-5" /> إنشاء أو استيراد فصل
+          </h2>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Input
+              placeholder="اسم الفصل..."
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") void createClass(); }}
+              disabled={atClassLimit}
+            />
+            <Button onClick={createClass} disabled={atClassLimit || !newName.trim()}>
+              <Plus className="h-4 w-4 ml-1" /> إنشاء
+            </Button>
+            <input
+              ref={fileRef}
+              type="file"
+              accept=".xlsx,.xls,.csv"
+              className="hidden"
+              onChange={handleFile}
+            />
+            <Button variant="outline" onClick={() => fileRef.current?.click()} disabled={busy || atClassLimit}>
+              <Upload className="h-4 w-4 ml-1" /> {busy ? "جاري الاستيراد..." : "استيراد من Excel"}
+            </Button>
           </div>
+          {atClassLimit && (
+            <p className="text-xs text-amber-600">وصلت للحد الأقصى {FREE_CLASS_LIMIT} فصول. اطلب Plus للمزيد.</p>
+          )}
         </Card>
-      )}
-    </main>
-  </div>
-);
-};
 
-export default Dashboard;
+        <div className="space-y-2">
+          <h2 className="font-semibold">فصولي ({classes.length})</h2>
+          {classes.length === 0 ? (
+            <Card className="p-8 text-center text-muted-foreground">
+              لا توجد فصول بعد. أنشئ فصلًا جديدًا أو استورد من Excel.
+            </Card>
+          ) : (
+            classes.map((c) => (
+              <Card key={c.id} className="p-4 flex items-center justify-between gap-3">
+                <Link to="/class/$classId" params={{ classId: c.id }} className="flex-1 hover:underline">
+                  <p className="font-medium">{c.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    أُنشئ في {new Date(c.created_at).toLocaleDateString("ar")}
+                  </p>
+                </Link>
+                <Button variant="ghost" size="icon" onClick={() => deleteClass(c.id)}>
+                  <Trash2 className="h-4 w-4 text-muted-foreground" />
+                </Button>
+              </Card>
+            ))
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}

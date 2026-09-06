@@ -1,6 +1,6 @@
-# دفتري الجميلة
+# دفتري الرائع
 
-استورد لي هذا الرابط https://github.com/teachLF/excel-grade-buddy
+منصة متابعة الطلاب وإدارة الفصول للمعلمين والمشرفين التربويين.
 
 This project was built with [Lovable](https://lovable.dev).
 
